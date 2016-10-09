@@ -9,19 +9,28 @@
  */
 // no direct access
 defined('_JEXEC') or die();
-class eshop_postcost_pishtaz   extends eshop_shipping
-{
+class eshop_postcost_pishtaz extends eshop_shipping{
+
+	public function __construct()
+	{
+		parent::setName('eshop_postcost_pishtaz');
+		parent::__construct();
+		require_once JPATH_COMPONENT . '/plugins/shipping/eshop_postcost_func.php'; // include Function post
+        	require_once JPATH_COMPONENT . '/plugins/shipping/eshop_postcost_totalpost_func.php'; // include Function post
+
+	}
     /**
      *
      * Constructor function
      */
-    function eshop_postcost_pishtaz()
-    {
-        parent::setName('eshop_postcost_pishtaz');
-        parent::eshop_shipping();
-        require_once JPATH_COMPONENT . '/plugins/shipping/eshop_postcost_func.php'; // include Function post
-        require_once JPATH_COMPONENT . '/plugins/shipping/eshop_postcost_totalpost_func.php'; // include Function post
-    }
+    //function eshop_postcost_pishtaz(){
+        //parent::setName('eshop_postcost_pishtaz');
+        //parent::eshop_shipping();
+        //require_once JPATH_COMPONENT . '/plugins/shipping/eshop_postcost_func.php'; // include Function post
+        //require_once JPATH_COMPONENT . '/plugins/shipping/eshop_postcost_totalpost_func.php'; // include Function post
+    //}
+    
+    
     //===============================================================================================  
     /**
      * 
@@ -74,14 +83,14 @@ class eshop_postcost_pishtaz   extends eshop_shipping
         $weight2000_BS  = $params->get('pishtaz_2000_BS');
         //---------------------------------------------------// ostani hamjavar
         $weight250_OS   = $params->get('pishtaz_250_OS');
-        $weight500_OS   = $params->get('pishtaz_500_OS');
-        $weight1000_OS  = $params->get('pishtaz_1000_OS');
-        $weight2000_OS  = $params->get('pishtaz_2000_OS');
+        $weight500_OS   = $params->get('pishtaz_250_OS');
+        $weight1000_OS  = $params->get('pishtaz_250_OS');
+        $weight2000_OS  = $params->get('pishtaz_250_OS');
         //--------------------------------------------------- // ostani gheire hamjavar
         $weight250_OGH  = $params->get('pishtaz_250_OGH');
-        $weight500_OGH  = $params->get('pishtaz_500_OGH');
-        $weight1000_OGH = $params->get('pishtaz_1000_OGH');
-        $weight2000_OGH = $params->get('pishtaz_2000_OGH');
+        $weight500_OGH  = $params->get('pishtaz_250_OGH');
+        $weight1000_OGH = $params->get('pishtaz_250_OGH');
+        $weight2000_OGH = $params->get('pishtaz_250_OGH');
         //--------------------------------------------------- // Plus
         $PLUS_BS = $params->get('PPlus_BS');
         $PLUS_OS = $params->get('PPlus_OS');
@@ -102,13 +111,7 @@ class eshop_postcost_pishtaz   extends eshop_shipping
 		{
 			echo '<p></p>'.'<font color="red">'.JText::_('PLG_ESHOP_POSTCOST_PISHTAZ_ERROR3').'</font>'.'<p></p>';
 		}
-         //==================================other cost=============================
-		$bime   =    $params->get('pishtaz_bime');
-		$shenase   = $params->get('pishtaz_shenase');
-		$agahi   =   $params->get('pishtaz_agahi');
-		$bk   =   $params->get('pishtaz_bk');
-		$tax   =     $params->get('pishtaz_tax');
-        //============================================================================
+        
         //============================================================================
         //=========================call function ==================================
         //----------- calculate postcost
@@ -119,15 +122,8 @@ class eshop_postcost_pishtaz   extends eshop_shipping
 	       {
 	        echo  '<p></p>'.'<font color="red">وزن محصول بیش از حد مجاز است</font>'.'<p></p>';
 	       }
-         //----------- calculate totalpost
-        $totalPost   = TotalPost($DestZone, $sourceZone, $outBeyneShahri, $outOstaniHam, $outOstaniGHam);
-        // echo $totalPost;
-        $out1 = $totalPost + $bime   + $shenase+ $agahi ; // cost without tax
-        
-        if (($tax != 0 ) & (is_numeric($tax) )) // add tax to cost post
-        {
-			$out =  (($out1* $tax )/100)+$out1 + $bk; // total cost
-		}
+        //----------- calculate totalpost
+        $out            = TotalPost($DestZone, $sourceZone, $outBeyneShahri, $outOstaniHam, $outOstaniGHam);
         //============================================================================
         $methodData     = array();
         $cost           = $out; // hazine shipping
@@ -138,13 +134,13 @@ class eshop_postcost_pishtaz   extends eshop_shipping
     
         $quoteData['price'] = array(
             'name' => 'eshop_postcost_pishtaz.price',
-            'title' => '<p></p>'.JText::_('PLG_ESHOP_POSTCOST_PISHTAZ_PRICE_DESC'), // name
+            'title' => '<p></p>'.JText::_('اطلاعات قیمت بر اساس پست پیشتاز'), // name
             'cost' => $out,
-            'text' => $out.'&nbsp;&nbsp;'.'ریال'.'&nbsp;&nbsp;'.')(مدت زمان دریافت کالا بین 2 الی 4 روز'
+            'text' => $out
         );
         $methodData         = array(
             'name' => 'eshop_postcost_pishtaz',
-            'title' => '<p></p>'.JText::_('PLG_ESHOP_POSTCOST_PISHTAZ_PRICE_TITLE'), // onvan
+            'title' => '<p></p>'.JText::_('پست پیشتاز'), // onvan
             'quote' => $quoteData,
             'ordering' => $row->ordering,
             'error' => false
